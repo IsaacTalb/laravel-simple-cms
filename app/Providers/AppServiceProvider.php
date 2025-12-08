@@ -2,29 +2,25 @@
 
 namespace App\Providers;
 
-use Barryvdh\Debugbar\ServiceProvider as DebugbarServiceProvider;
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use App\View\Composers\NavigationComposer;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function boot()
+    /**
+     * Register any application services.
+     */
+    public function register(): void
     {
-        Paginator::defaultView('pagination::bulma');
-        Paginator::defaultSimpleView('pagination::simple-bulma');
+        //
     }
 
     /**
-     * Register any application services.
-     *
-     * @return void
+     * Bootstrap any application services.
      */
-    public function register()
+    public function boot(): void
     {
-        if ($this->app->environment() !== 'production') {
-            $this->app->register(IdeHelperServiceProvider::class);
-            $this->app->register(DebugbarServiceProvider::class);
-        }
+        View::composer('components.layouts.app', NavigationComposer::class);
     }
 }

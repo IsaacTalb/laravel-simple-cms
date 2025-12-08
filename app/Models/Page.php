@@ -2,46 +2,54 @@
 
 namespace App\Models;
 
-use App\Base\SluggableModel;
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
-class Page extends SluggableModel
+class Page extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'parent_id',
+        'title',
+        'slug',
+        'excerpt',
+        'content',
+        'is_published',
+        'sort_order',
+    ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    protected $casts = [
+        'is_published' => 'boolean',
+        'sort_order' => 'integer',
+    ];
+
+    protected static function booted(): void
     {
-        return $this->belongsTo(__CLASS__);
+        static::creating(function (Page $page) {
+            if (empty($page->slug)) {
+                $page->slug = Str::slug($page->title);
+            }
+        });
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function parent(): BelongsTo
     {
-        return $this->hasMany(__CLASS__, 'parent_id', 'id');
+        return $this->belongsTo(Page::class, 'parent_id');
     }
 
-    /**
-     * @return string
-     */
-    public function getLinkAttribute(): string
+    public function children(): HasMany
     {
-        return route('page', ['pSlug' => $this->slug]);
+        return $this->hasMany(Page::class, 'parent_id')->orderBy('sort_order');
     }
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
+    public function scopePublished($query)
     {
-        return $date->format('Y-m-d H:i:s');
+        return $query->where('is_published', true);
+    }
+
+    public function scopeRoots($query)
+    {
+        return $query->whereNull('parent_id');
     }
 }

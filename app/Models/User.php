@@ -2,63 +2,76 @@
 
 namespace App\Models;
 
-use DateTimeInterface;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $fillable = ['email', 'password'];
+    protected $fillable = [
+        'name',
+        'email',
+        'role',
+        'password',
+    ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The model's default values for attributes.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $attributes = [
+        'role' => 'editor',
+    ];
 
     /**
-     * The attributes that should be mutated to dates.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $dates = ['logged_in_at', 'logged_out_at'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
-     * Set password encrypted
+     * Get the attributes that should be cast.
      *
-     * @param $password
+     * @return array<string, string>
      */
-    public function setPasswordAttribute($password): void
+    protected function casts(): array
     {
-        $this->attributes['password'] = Hash::make($password);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'role' => UserRole::class,
+        ];
     }
 
-    /**
-     * @return string
-     */
-    public function getPictureAttribute() : string
+    public function canAccessPanel(Panel $panel): bool
     {
-        return 'https://ssl.gstatic.com/accounts/ui/avatar_2x.png';
+        return true;
     }
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
+    public function isAdmin(): bool
     {
-        return $date->format('Y-m-d H:i:s');
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isEditor(): bool
+    {
+        return $this->role === UserRole::Editor;
     }
 }

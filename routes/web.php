@@ -1,18 +1,16 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| This file is where you may define all of the routes that are handled
-| by your application. Just tell Laravel the URIs it should respond
-| to using a Closure or controller method. Build something great!
-|
-*/
+use App\Http\Controllers\Frontend\ArticleController;
+use App\Http\Controllers\Frontend\CategoryController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PageController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', ['as' => 'root', 'uses' => 'PageController@getIndex']);
-Route::get('a/{aSlug}', ['as' => 'article', 'uses' => 'PageController@getArticle']);
-Route::get('p/{pSlug}', ['as' => 'page', 'uses' => 'PageController@getPage']);
-Route::get('c/{cSlug}', ['as' => 'category', 'uses' => 'PageController@getCategory']);
-Route::get('sitemap.xml', ['as' => 'sitemap', 'uses' => 'PageController@getSitemap']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/article/{slug}', [ArticleController::class, 'show'])->name('articles.show');
+
+Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+
+Route::get('/page/{slug}', [PageController::class, 'show'])->name('pages.show');

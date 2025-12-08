@@ -1,3 +1,0 @@
-        Route::bind('{{MODEL_NAME_SNAKECASE}}Slug', function ($slug) {
-            return \App\Models\{{MODEL_NAME}}::where('slug', $slug)->firstOrFail();
-        });

@@ -2,63 +2,78 @@
 
 namespace App\Models;
 
-use App\Base\SluggableModel;
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Article extends SluggableModel
+class Article extends Model implements HasMedia
 {
-    use HasFactory;
+    use InteractsWithMedia;
 
-    /**
-     * Carbon instance fields
-     *
-     * @var array
-     */
-    protected $dates = ['published_at'];
+    protected $fillable = [
+        'category_id',
+        'title',
+        'slug',
+        'excerpt',
+        'content',
+        'featured_image',
+        'is_published',
+        'read_count',
+        'published_at',
+    ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    protected $casts = [
+        'is_published' => 'boolean',
+        'published_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Article $article) {
+            if (empty($article->slug)) {
+                $article->slug = Str::slug($article->title);
+            }
+        });
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('featured')
+            ->singleFile();
+    }
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * @param $query
-     *
-     * @return mixed
-     */
+    public function views(): HasMany
+    {
+        return $this->hasMany(ArticleView::class);
+    }
+
+    public function recordView(?string $ipAddress = null, ?string $userAgent = null, ?string $referer = null): ArticleView
+    {
+        return $this->views()->create([
+            'ip_address' => $ipAddress,
+            'user_agent' => $userAgent,
+            'referer' => $referer,
+            'viewed_at' => now(),
+        ]);
+    }
+
     public function scopePublished($query)
     {
-        return $query->where('published_at', '<=', now())->orderBy('published_at', 'desc');
+        return $query->where('is_published', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
-    /**
-     * @return string
-     */
-    public function getLocalizedPublishedAtAttribute(): string
+    public function getViewCountAttribute(): int
     {
-        return $this->published_at->formatLocalized('%e %B %Y');
-    }
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return $date->format('Y-m-d H:i:s');
-    }
-
-    /**
-     * @return string
-     */
-    public function getLinkAttribute(): string
-    {
-        return route('article', ['aSlug' => $this->slug]);
+        return $this->views()->count();
     }
 }

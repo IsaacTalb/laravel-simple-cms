@@ -1,1 +1,0 @@
-@include('partials.admin.nav.dropdown', ['resource' => '{{MODEL_NAME_SNAKECASE}}', 'icon' => 'more-horizontal'])

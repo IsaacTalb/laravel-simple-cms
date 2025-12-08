@@ -2,38 +2,34 @@
 
 namespace App\Models;
 
-use App\Base\SluggableModel;
-use DateTimeInterface;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
-class Category extends SluggableModel
+class Category extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'title',
+        'slug',
+        'description',
+        'is_active',
+    ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function articles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    protected static function booted(): void
     {
-        return $this->hasMany(Article::class)->published();
+        static::creating(function (Category $category) {
+            if (empty($category->slug)) {
+                $category->slug = Str::slug($category->title);
+            }
+        });
     }
 
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface  $date
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
+    public function articles(): HasMany
     {
-        return $date->format('Y-m-d H:i:s');
-    }
-
-    /**
-     * @return string
-     */
-    public function getLinkAttribute(): string
-    {
-        return route('category', ['cSlug' => $this->slug]);
+        return $this->hasMany(Article::class);
     }
 }

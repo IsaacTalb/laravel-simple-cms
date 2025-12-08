@@ -2,43 +2,45 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
+use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     /**
-     * Run the database seeds.
+     * Seed the application's database.
      *
-     * @return void
+     * Usage:
+     *   php artisan db:seed                    - Seeds admin user only
+     *   php artisan db:seed --class=ContentSeeder - Seeds sample content only
+     *   php artisan migrate:fresh --seed      - Fresh database with admin user
      */
-    public function run()
+    public function run(): void
     {
-        $this->addUsers();
-        $this->addContent();
-    }
+        // Create admin user
+        User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin',
+                'role' => UserRole::Admin,
+                'password' => bcrypt('password'),
+            ]
+        );
 
-    /**
-     * Add user
-     */
-    public function addUsers(): void
-    {
-        \DB::table('users')->delete();
-        \App\Models\User::create(['email' => 'admin@admin.com', 'password' => '123456']);
-    }
+        // Create editor user
+        User::firstOrCreate(
+            ['email' => 'editor@editor.com'],
+            [
+                'name' => 'Editor',
+                'role' => UserRole::Editor,
+                'password' => bcrypt('password'),
+            ]
+        );
 
-    /**
-     * Add some content
-     */
-    public function addContent(): void
-    {
-        \DB::table('categories')->delete();
-        \App\Models\Category::factory(5)->create();
-        \DB::table('articles')->delete();
-        \App\Models\Article::factory(40)->create();
-        \DB::table('pages')->delete();
-        \App\Models\Page::factory(6)->create(['parent_id' => null]);
-        foreach (range(4, 5) as $p) {
-            \App\Models\Page::factory(2)->create(['parent_id' => $p]);
-        }
+        // To seed with sample content, run: php artisan db:seed --class=ContentSeeder
     }
 }
