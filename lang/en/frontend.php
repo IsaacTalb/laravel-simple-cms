@@ -56,8 +56,8 @@ return [
         'last_updated' => 'Last updated: :date',
         'related_pages' => 'Related Pages',
         'quick_contact' => 'Quick Contact',
-        'contact_address' => '123 Demo Street, City, Country',
-        'contact_email' => 'hello@example.com',
+        'contact_address' => '109th Street, New York, NY 10011, USA',
+        'contact_email' => 'editor@quicktech.info',
         'contact_hours' => 'Mon - Fri: 9:00 - 17:00',
     ],
 
