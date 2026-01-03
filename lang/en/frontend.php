@@ -2,9 +2,9 @@
 
 return [
     // Site
-    'site_name' => 'Laravel Simple CMS',
-    'site_tagline' => 'Stories & insights that matter.',
-    'site_description' => 'A curated collection of thoughtful articles exploring technology, design, lifestyle, and business.',
+    'site_name' => 'Quick Tech Info',
+    'site_tagline' => 'Faster & Useful insights that matter.',
+    'site_description' => 'Discover insightful articles on technology, design, lifestyle, and business at QuickTech.info. Stay updated with the latest trends and expert tips.',
 
     // Navigation
     'nav' => [
@@ -20,7 +20,7 @@ return [
     // Articles
     'articles' => [
         'title' => 'All Articles',
-        'description' => 'Explore our collection of articles on technology, design, lifestyle, and business.',
+        'description' => 'Dive into expert insights and the latest trends in technology, design, lifestyle, and business. Stay informed with QuickTech.info.',
         'latest' => 'Latest Articles',
         'browse_by_topic' => 'Browse by Topic',
         'read_more' => 'Read more',

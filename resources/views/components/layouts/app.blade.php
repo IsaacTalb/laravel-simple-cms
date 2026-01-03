@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? __('frontend.nav.home') }} - {{ __('frontend.site_name') }}</title>
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('quicktech_info.svg') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -14,6 +14,9 @@
     <header class="sticky top-0 z-50 bg-base-100/95 backdrop-blur-sm border-b border-base-300">
         <div class="navbar container mx-auto px-6 justify-between">
             <div class="navbar-start">
+                <a href="{{route('home')}}">
+                    <img src="{{ asset('quicktech_info.svg') }}" alt="{{ __('frontend.site_name') }}" class="w-10 h-10 mr-3">
+                </a>
                 <a href="{{ route('home') }}" class="font-display text-xl font-semibold hover:text-primary transition-colors">
                     {{ __('frontend.site_name') }}
                 </a>
@@ -53,6 +56,7 @@
             <div class="flex flex-col md:flex-row justify-between gap-8">
                 <div>
                     <span class="font-display text-lg font-semibold">{{ __('frontend.site_name') }}</span>
+                    <span class="block text-sm text-neutral-content/60">{{ __('frontend.site_tagline') }}</span>
                     <p class="mt-3 text-neutral-content/60 text-sm max-w-xs">
                         {{ __('frontend.site_description') }}
                     </p>
