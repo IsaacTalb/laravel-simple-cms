@@ -6,6 +6,8 @@ return [
     'site_tagline' => 'Faster & Useful insights that matter.',
     'site_description' => 'Discover insightful articles on technology, design, lifestyle, and business at QuickTech.info. Stay updated with the latest trends and expert tips.',
 
+    //Sitemap
+    'sitemap' => 'Sitemap',
     // Navigation
     'nav' => [
         'home' => 'Home',

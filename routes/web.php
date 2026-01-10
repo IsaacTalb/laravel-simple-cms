@@ -14,3 +14,6 @@ Route::get('/article/{slug}', [ArticleController::class, 'show'])->name('article
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
 
 Route::get('/page/{slug}', [PageController::class, 'show'])->name('pages.show');
+Route::get('sitemap.xml', function () {
+    return response()->file(public_path('sitemap.xml'));
+});
